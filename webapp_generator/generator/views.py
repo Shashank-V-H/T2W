@@ -21,11 +21,21 @@ def generate_webpage(request):
             data = json.loads(request.body.decode('utf-8'))
             prompt = data.get('prompt', '')
 
+            # Modify the prompt for code-only responses
+            refined_prompt = (
+                f"{prompt}\n\n"
+                "Respond with only the required code in the following format:\n"
+                "1. Start with HTML code block enclosed within `<html>` tags.\n"
+                "2. Follow with CSS code enclosed within `<style>` tags.\n"
+                "3. Finally, provide JavaScript code enclosed within `<script>` tags.\n"
+                "Do not include any explanatory text, comments, or descriptions."
+            )
+
             # Prepare the payload for Together.AI API
             payload = {
                 "model": "Qwen/Qwen2.5-72B-Instruct-Turbo",
                 "messages": [
-                    {"role": "user", "content": prompt}
+                    {"role": "user", "content": refined_prompt}
                 ]
             }
             headers = {
@@ -36,7 +46,7 @@ def generate_webpage(request):
 
             # Make the API request
             response = requests.post(TOGETHER_AI_API_URL, json=payload, headers=headers)
-            
+
             # Log the response for debugging
             logging.debug(f"API Response: {response.text}")
 
