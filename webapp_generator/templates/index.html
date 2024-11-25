@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text-to-Web Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text-to-Web Generator</h1>
+        <form id="generateForm">
+            <textarea id="prompt" class="form-control" rows="4"></textarea><br>
+            <button type="button" class="btn btn-primary" onclick="generateWeb()">Generate</button>
+        </form>
+        <div id="output" class="mt-4"></div>
+    </div>
+    <script>
+        function generateWeb() {
+            fetch('/generate/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ 'prompt': document.getElementById('prompt').value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').innerHTML = data.html_code;
+            });
+        }
+    </script>
+</body>
+</html>
