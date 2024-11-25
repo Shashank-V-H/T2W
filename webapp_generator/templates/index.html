@@ -9,23 +9,34 @@
     <div class="container">
         <h1>Text-to-Web Generator</h1>
         <form id="generateForm">
-            <textarea id="prompt" class="form-control" rows="4"></textarea><br>
+            <textarea id="prompt" class="form-control" rows="4" placeholder="Enter your prompt here"></textarea><br>
             <button type="button" class="btn btn-primary" onclick="generateWeb()">Generate</button>
         </form>
-        <div id="output" class="mt-4"></div>
+        <div id="output" class="mt-4">
+            <h3>Generated Output:</h3>
+            <pre id="renderOutput" class="p-3 border bg-light"></pre>
+        </div>
     </div>
     <script>
         function generateWeb() {
+            const prompt = document.getElementById('prompt').value;
             fetch('/generate/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                body: JSON.stringify({ 'prompt': document.getElementById('prompt').value })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ prompt: prompt })
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('output').innerHTML = data.html_code;
+                document.getElementById('renderOutput').innerText = data.html_code || "No output generated.";
+            })
+            .catch(error => {
+                document.getElementById('renderOutput').innerText = `Error: ${error}`;
             });
         }
     </script>
 </body>
 </html>
+
