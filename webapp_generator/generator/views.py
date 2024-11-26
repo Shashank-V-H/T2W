@@ -146,26 +146,28 @@ def benchmark_api(request):
     # Return benchmark results as JSON
     return JsonResponse({'benchmark_results': results})
 
-
 def download_zip(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))
             html_code = data.get('html_code', '')
 
-            # Split the code into HTML, CSS, and JS
+            if not html_code.strip():
+                return JsonResponse({'error': 'No HTML code provided to generate ZIP.'}, status=400)
+
+            # Parse the code into HTML, CSS, and JS parts
             html_part, css_part, js_part = parse_generated_code(html_code)
 
-            # Create a ZIP file in memory
+            # Create the ZIP file in memory
             zip_buffer = io.BytesIO()
             with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 zip_file.writestr('index.html', html_part)
-                zip_file.writestr('styles.css', css_part)
-                zip_file.writestr('script.js', js_part)
+                zip_file.writestr('styles.css', css_part or "/* Add your CSS here */")
+                zip_file.writestr('script.js', js_part or "// Add your JavaScript here")
 
             zip_buffer.seek(0)  # Move to the start of the file
 
-            # Set proper HTTP response for file download
+            # Set proper HTTP response for the file download
             response = HttpResponse(zip_buffer.read(), content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename=generated_webpage.zip'
             return response
@@ -175,9 +177,26 @@ def download_zip(request):
     else:
         return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=400)
 
+
 def parse_generated_code(code):
-    # Extract the HTML, CSS, and JS parts from the generated code
-    html_part = code.split('<style>')[0].strip()
-    css_part = code.split('<style>')[1].split('</style>')[0].strip()
-    js_part = code.split('<script>')[1].split('</script>')[0].strip()
+    # Default parts
+    html_part = code
+    css_part = ""
+    js_part = ""
+
+    # Extract CSS if present
+    if "<style>" in code and "</style>" in code:
+        css_part = code.split('<style>')[1].split('</style>')[0].strip()
+        html_part = code.replace(f"<style>{css_part}</style>", "").strip()
+
+    # Extract JS if present
+    if "<script>" in code and "</script>" in code:
+        js_part = code.split('<script>')[1].split('</script>')[0].strip()
+        html_part = html_part.replace(f"<script>{js_part}</script>", "").strip()
+
+    # Ensure proper linking in the HTML
+    html_part = html_part.replace("</head>", '<link rel="stylesheet" href="styles.css">\n</head>')
+    html_part = html_part.replace("</body>", '<script src="script.js"></script>\n</body>')
+
     return html_part, css_part, js_part
+
