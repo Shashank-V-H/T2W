@@ -6,72 +6,70 @@
     <title>Text-to-Web Generator</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Additional custom styling for the page */
         body {
             background-color: #f8f9fa;
             font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        .container {
-            margin-top: 30px;
-        }
-
-        #output {
-            margin-top: 30px;
-            border: 2px solid #ddd;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff;
-        }
-
-        #generatedContent {
-            border: 1px solid #ccc;
-            margin-top: 20px;
-            padding: 15px;
-            min-height: 300px;
-            background-color: #f4f4f4;
-            overflow-y: auto;
-        }
-
-        #copyButtonContainer {
-            margin-top: 20px;
-            display: none;
-        }
-
-        #copyButton {
+        .split-container {
+            display: flex;
             width: 100%;
+            height: 100%;
+        }
+
+        .left-panel {
+            width: 40%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+
+        .right-panel {
+            width: 60%;
+            padding: 20px;
+            background-color: #fff;
+            overflow-y: auto;
         }
 
         iframe {
             width: 100%;
-            height: 400px;
+            height: 100%;
             border: none;
-            margin-top: 20px;
             border-radius: 8px;
+        }
+
+        .bottom-section {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Text-to-Web Generator</h1>
-        <form id="generateForm" class="mb-4">
-            <textarea id="prompt" class="form-control" rows="4" placeholder="Enter your prompt here..."></textarea><br>
-            <button type="button" class="btn btn-primary" onclick="generateWeb()">Generate</button>
-        </form>
-
-        <!-- The generated code will be displayed here -->
-        <div id="generatedContent"></div>
-
-        <!-- Copy to Clipboard Button -->
-        <div id="copyButtonContainer">
-            <button id="copyButton" class="btn btn-success">Copy Code</button>
+    <div class="split-container">
+        <div class="left-panel">
+            <div class="top-section">
+                <h4>Enter your prompt:</h4>
+                <textarea id="prompt" class="form-control" rows="6" placeholder="Enter your prompt..."></textarea><br>
+                <button class="btn btn-primary btn-block" onclick="generateWeb()">Generate</button>
+            </div>
+            <div class="bottom-section">
+                <button class="btn btn-success btn-block" onclick="downloadZIP()">Download ZIP</button>
+            </div>
         </div>
 
-        <!-- Iframe to render generated code -->
-        <iframe id="outputIframe"></iframe>
+        <div class="right-panel">
+            <iframe id="outputIframe"></iframe>
+        </div>
     </div>
 
     <script>
+        let generatedCode = '';
+
         // Function to generate code by calling the backend API
         function generateWeb() {
             fetch('/generate/', {
@@ -84,32 +82,37 @@
             })
             .then(response => response.json())
             .then(data => {
-                const generatedCode = data.html_code;
-                document.getElementById('generatedContent').innerHTML = '<pre>' + generatedCode + '</pre>';
-
-                // Show the Copy Code button after code is generated
-                document.getElementById('copyButtonContainer').style.display = 'block';
-
-                // Set the code as the text to be copied
-                const copyButton = document.getElementById('copyButton');
-                copyButton.onclick = function() {
-                    // Create a temporary textarea to copy the content to clipboard
-                    const textarea = document.createElement('textarea');
-                    textarea.value = generatedCode;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    alert('Code copied to clipboard!');
-                };
-
-                // Render the generated code inside the iframe
+                generatedCode = data.html_code;
                 const iframe = document.getElementById('outputIframe');
                 const iframeDocument = iframe.contentWindow.document;
-
+                
                 iframeDocument.open();
                 iframeDocument.write(generatedCode);
                 iframeDocument.close();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to download the generated code as a ZIP file
+        function downloadZIP() {
+            fetch('/download_zip/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 'html_code': generatedCode })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'generated_webpage.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
             })
             .catch(error => console.error('Error:', error));
         }
