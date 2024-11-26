@@ -1,7 +1,6 @@
 import requests
 import json
-import time
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 import logging
 import zipfile
@@ -14,15 +13,6 @@ logging.basicConfig(level=logging.DEBUG)
 TOGETHER_AI_API_URL = "https://api.together.xyz/v1/chat/completions"
 TOGETHER_API_KEY = "3460fb4d7e4663f65203cdad6290169cafb2bdb89584278a59b161eea88479d7"
 
-# Standard test prompts for benchmarking
-test_prompts = [
-    "Create a simple webpage with a contact form.",
-    "Design a responsive navbar with dropdowns.",
-    "Create a webpage with a product gallery using flexbox.",
-    "Create a webpage with an interactive login form.",
-    "Generate a page with a responsive footer."
-]
-
 def index(request):
     return render(request, 'index.html')
 
@@ -33,7 +23,7 @@ def generate_webpage(request):
             data = json.loads(request.body.decode('utf-8'))
             prompt = data.get('prompt', '')
 
-            # Advanced prompt engineering
+            # Modify the prompt for code-only responses
             refined_prompt = (
                 f"{prompt}\n\n"
                 "Respond with only the required code in the following format:\n"
@@ -57,14 +47,10 @@ def generate_webpage(request):
             }
 
             # Make the API request
-            start_time = time.time()
             response = requests.post(TOGETHER_AI_API_URL, json=payload, headers=headers)
-            end_time = time.time()
 
             # Log the response for debugging
-            latency = end_time - start_time
             logging.debug(f"API Response: {response.text}")
-            logging.debug(f"Latency: {latency} seconds")
 
             # Parse the API response
             if response.status_code == 200:
@@ -81,70 +67,9 @@ def generate_webpage(request):
             generated_code = f"Error: {str(e)}"
 
         # Return the generated code as JSON
-        return JsonResponse({'html_code': generated_code, 'latency': latency})
+        return JsonResponse({'html_code': generated_code})
     else:
         return JsonResponse({'html_code': 'Invalid request method. Use POST.'})
-
-def benchmark_api(request):
-    """
-    Function to benchmark the performance of the API using predefined test prompts.
-    """
-    results = []
-    for prompt in test_prompts:
-        try:
-            # Prepare the prompt
-            refined_prompt = (
-                f"{prompt}\n\n"
-                "Respond with only the required code in the following format:\n"
-                "1. Start with HTML code block enclosed within `<html>` tags.\n"
-                "2. Follow with CSS code enclosed within `<style>` tags.\n"
-                "3. Finally, provide JavaScript code enclosed within `<script>` tags.\n"
-                "Do not include any explanatory text, comments, or descriptions."
-            )
-
-            # Prepare the payload for Together.AI API
-            payload = {
-                "model": "Qwen/Qwen2.5-72B-Instruct-Turbo",
-                "messages": [
-                    {"role": "user", "content": refined_prompt}
-                ]
-            }
-            headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "authorization": f"Bearer {TOGETHER_API_KEY}"
-            }
-
-            # Make the API request and measure latency
-            start_time = time.time()
-            response = requests.post(TOGETHER_AI_API_URL, json=payload, headers=headers)
-            end_time = time.time()
-            latency = end_time - start_time
-
-            # Log the response and latency
-            if response.status_code == 200:
-                response_data = response.json()
-                if "choices" in response_data:
-                    generated_code = response_data["choices"][0]["message"]["content"]
-                else:
-                    generated_code = "Error: No valid output from the API."
-            else:
-                generated_code = f"Error: {response.status_code} - {response.text}"
-
-            # Append the result for this prompt
-            results.append({
-                "prompt": prompt,
-                "latency": latency,
-                "generated_code": generated_code
-            })
-
-        except Exception as e:
-            logging.error(f"Error during API benchmark for prompt {prompt}: {e}")
-            results.append({"prompt": prompt, "latency": None, "generated_code": f"Error: {str(e)}"})
-
-    # Return benchmark results as JSON
-    return JsonResponse({'benchmark_results': results})
-
 
 def download_zip(request):
     if request.method == 'POST':
