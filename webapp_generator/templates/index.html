@@ -1,23 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Text-to-Web Generator</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
+            background-color: black;
+            color: white;
+            font: Oswald;
+            font-size: 16px;
+            text-align: left;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .white-mode {
+            background-color: white;
+            color: black;
         }
 
         .split-container {
             display: flex;
             width: 100%;
-            height: 100%;
+            height: 100vh;
         }
 
         .left-panel {
@@ -26,14 +35,12 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .right-panel {
             width: 60%;
             padding: 20px;
-            background-color: #fff;
             overflow-y: auto;
         }
 
@@ -45,11 +52,85 @@
         }
 
         .bottom-section {
-            margin-top: 20px;
+            margin-top: 0; /* Pull the button up */
+        }
+
+        h1 {
+            font-size: 32px;
+            font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
+            font-weight: 400;
+        }
+
+        h2 {
+            color: #4CC9F0;
+            font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
+            font-weight: 400;
+        }
+
+        .nav-link {
+            color: #4CC9F0;
+        }
+
+        .nav-link:hover {
+            color: red;
+        }
+
+        .alert-custom {
+            background-color: #000000;
+            border: 2px solid #87CEEB;
+            color: white;
+        }
+
+        .alert-custom h4 {
+            color: #87CEEB;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+        }
+
+        .nav-link.active {
+            color: #4CC9F0 !important;
+            font-weight: bold;
+        }
+
+        /* Terminal-like appearance for the prompt input */
+        #prompt {
+            background-color: #111;
+            color: #00FF00; /* Classic terminal green */
+            border: 2px solid #555;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            padding: 10px;
         }
     </style>
 </head>
+
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/We/"><b>Ss</b></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Removed Home and Program List -->
+                </ul>
+                <button onclick="toggleTheme()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off"
+                        viewBox="0 0 16 16">
+                        <path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- End Navbar -->
+
     <div class="split-container">
         <div class="left-panel">
             <div class="top-section">
@@ -57,9 +138,9 @@
                 <textarea id="prompt" class="form-control" rows="6" placeholder="Enter your prompt..."></textarea><br>
                 <button class="btn btn-primary btn-block" onclick="generateWeb()">Generate</button>
             </div>
-            <div class="bottom-section">
-                <button class="btn btn-success btn-block" onclick="downloadZIP()">Download ZIP</button>
-            </div>
+    <div class="bottom-section">
+        <button class="btn btn-success btn-block" onclick="downloadZIP()">Download ZIP</button>
+    </div>
         </div>
 
         <div class="right-panel">
@@ -116,6 +197,53 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
+        // Function to toggle light/dark theme
+        function toggleTheme() {
+            const body = document.body;
+            if (body.classList.contains('white-mode')) {
+                body.classList.remove('white-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('white-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Check for saved theme in localStorage and apply it
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('white-mode');
+            }
+        }
     </script>
+
+    <!-- Footer -->
+    <footer class="text-center text-lg-start">
+        <div class="container d-flex justify-content-center py-2">
+            <!-- <a class="btn btn-link btn-floating btn-lg text-light m-1" href="https://www.linkedin.com/in/shashank-v-h-a13538229/" -->
+            <!--     target="_blank" role="button" data-mdb-ripple-color="dark"><i class="fab fa-linkedin"></i></a> -->
+            <!-- <a class="btn btn-link btn-floating btn-lg text-light m-1" href="https://github.com/Shashank-V-H/django_lab_projects.git" -->
+            <!--     target="_blank" role="button" data-mdb-ripple-color="dark"><i class="fab fa-github"></i></a> -->
+        </div>
+        <div class="text-center text-white p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2024 Copyright: <b>S's</b>
+        </div>
+    </footer>
+    <!-- End Footer -->
+
+
+        <!-- highlight.js for highlighting the code -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" > </script>
+        <script>
+        hljs.highlightAll();
+        </script>
+        <!-- highlight.js for highlighting the code -->
+
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
+
 </html>
