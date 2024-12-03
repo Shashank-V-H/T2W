@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>About Us</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .card {
+            background-color: #1e1e1e;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card.light-mode {
+            background-color: #f9f9f9;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .icon {
+            font-size: 24px;
+            margin: 0 10px;
+            color: #4CC9F0;
+            transition: color 0.2s;
+        }
+
+        .icon:hover {
+            color: red;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">About Us</h1>
+        <div class="row g-4">
+            <!-- Team Member Card -->
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h3>Sathwik C M</h3>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a href="https://github.com/Sathwikcm1" target="_blank"><i class="fab fa-github icon"></i></a>
+                        <a href="https://www.linkedin.com/in/sathwik-c-m-0b165424a/" target="_blank"><i class="fab fa-linkedin icon"></i></a>
+                        <a href="mailto:sathwikcm@gmail.com"><i class="fas fa-envelope icon"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member Card -->
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h3>Shashank V H</h3>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a href="https://github.com/Shashank-V-H" target="_blank"><i class="fab fa-github icon"></i></a>
+                        <a href="https://www.linkedin.com/in/shashank-v-h/" target="_blank"><i class="fab fa-linkedin icon"></i></a>
+                        <a href="mailto:shashank@example.com"><i class="fas fa-envelope icon"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member Card -->
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h3>Sudeep D</h3>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a href="https://github.com/sudeep1402" target="_blank"><i class="fab fa-github icon"></i></a>
+                        <a href="https://www.linkedin.com/in/sudeep-d-169a5930b" target="_blank"><i class="fab fa-linkedin icon"></i></a>
+                        <a href="mailto:sudeepd2020@gmail.com"><i class="fas fa-envelope icon"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member Card -->
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h3>Subham Mohanty</h3>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a href=" https://github.com/Subham157 " target="_blank"><i class="fab fa-github icon"></i></a>
+                        <a href="http://linkedin.com/in/subham-mohanty-a225b2230" target="_blank"><i class="fab fa-linkedin icon"></i></a>
+                        <a href="mailto:mohantysubham115@gmail.com"><i class="fas fa-envelope icon"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Apply saved theme
+        window.onload = function () {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.querySelectorAll('.card').forEach(card => card.classList.add('light-mode'));
+            }
+        }
+    </script>
+</body>
+
+</html>
