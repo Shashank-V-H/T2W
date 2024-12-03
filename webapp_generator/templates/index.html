@@ -5,245 +5,267 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Text-to-Web Generator</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            background-color: black;
-            color: white;
-            font: Oswald;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Oswald, sans-serif;
             font-size: 16px;
-            text-align: left;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .white-mode {
-            background-color: white;
-            color: black;
-        }
-
-        .split-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-
-        .left-panel {
-            width: 40%;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .right-panel {
-            width: 60%;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 8px;
-        }
-
-        .bottom-section {
-            margin-top: 0; /* Pull the button up */
-        }
-
-        h1 {
-            font-size: 32px;
-            font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
-            font-weight: 400;
-        }
-
-        h2 {
-            color: #4CC9F0;
-            font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
-            font-weight: 400;
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
         }
 
         .nav-link {
             color: #4CC9F0;
+            margin-right: 15px;
         }
 
         .nav-link:hover {
             color: red;
         }
 
-        .alert-custom {
-            background-color: #000000;
-            border: 2px solid #87CEEB;
+        .dark-mode-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .dark-mode-btn i {
             color: white;
         }
 
-        .alert-custom h4 {
-            color: #87CEEB;
+        .split-container {
+            display: flex;
+            height: calc(100vh - 56px);
         }
 
-        button {
-            background-color: black;
-            color: white;
+        .left-panel {
+            flex: 1;
+            padding: 20px;
+            background-color: #1e1e1e;
+            overflow-y:auto;
+            color: #ffffff;
+        }
+        
+        .left-panel.light-mode {
+            background-color: #f5f5f5;
+            color: #000000;
         }
 
-        .nav-link.active {
-            color: #4CC9F0 !important;
-            font-weight: bold;
+        .right-panel {
+            flex: 2;
+            border-left: 1px solid #444;
+            background-color: #150202;
         }
 
-        /* Terminal-like appearance for the prompt input */
+        .right-panel.light-mode {
+            background-color: #f9f9f9;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: 3px;
+        }
+
+        .btn-primary {
+            background-color: black !important;
+            color: white !important;
+            margin-top:10px;
+            margin-bottom: 30px;
+        }
+
+        .btn-status {
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom:10px;
+        }
+        
+        .spinner {
+            display: none;
+            margin: 10px auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #4CC9F0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
         #prompt {
-            background-color: #111;
-            color: #00FF00; /* Classic terminal green */
-            border: 2px solid #555;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 16px;
-            padding: 10px;
+            background-color: black;
+            font-size:25px;
+            color: white;
         }
+        
     </style>
 </head>
 
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/We/"><b>Ss</b></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <!-- Removed Home and Program List -->
-                </ul>
-                <button onclick="toggleTheme()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off"
-                        viewBox="0 0 16 16">
-                        <path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
-                    </svg>
+        <div class="container-fluid d-flex align-items-center">
+            <a class="navbar-brand" href="#">
+                <h1>T2W</h1>
+                <br>
+            </a>
+            <h2  class="navbar-brand bg-dark" style="color:white !important; font-size:30px;">Text to Web Application</h2>
+            <div class="d-flex align-items-center">
+                <a class="nav-link" href="about_us">About Us</a>
+                <button class="dark-mode-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="dark-mode-icon"></i>
                 </button>
             </div>
         </div>
     </nav>
     <!-- End Navbar -->
 
+    <!-- Split View -->
     <div class="split-container">
-        <div class="left-panel">
-            <div class="top-section">
-                <h4>Enter your prompt:</h4>
-                <textarea id="prompt" class="form-control" rows="6" placeholder="Enter your prompt..."></textarea><br>
-                <button class="btn btn-primary btn-block" onclick="generateWeb()">Generate</button>
-            </div>
-    <div class="bottom-section">
-        <button class="btn btn-success btn-block" onclick="downloadZIP()">Download ZIP</button>
+        <!-- Left Panel -->
+        <div class="left-panel" id="left-panel">
+            <h4>Enter your prompt:</h4>
+            <textarea id="prompt" class="form-control" rows="4" placeholder="EX: Render a simple login page.."></textarea><br>
+            <button class="btn btn-primary btn-block" onclick="generateWeb() ">Generate</button>
+            <div id="spinner" class="spinner"></div>
+            <br>
+            <button  class="btn btn-success btn-block mt-2" onclick="downloadZIP()">Download ZIP</button>
     </div>
-        </div>
 
-        <div class="right-panel">
+        <!-- Right Panel -->
+        <div class="right-panel" id="right-panel">
             <iframe id="outputIframe"></iframe>
         </div>
     </div>
-
+        <!-- Footer -->
+        <footer class="text-center text-lg-start">
+            <div class="container d-flex justify-content-center py-2">
+            </div>
+            <div class="text-center text-white p-3" style="background-color: rgba(0, 0, 0, 0.2); margin-top: 10px;">
+                © 2024 Copyright: <b>T2W</b>
+            </div>
+        </footer>
+     
     <script>
         let generatedCode = '';
 
-        // Function to generate code by calling the backend API
-        function generateWeb() {
-            fetch('/generate/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ 'prompt': document.getElementById('prompt').value })
-            })
-            .then(response => response.json())
-            .then(data => {
-                generatedCode = data.html_code;
-                const iframe = document.getElementById('outputIframe');
-                const iframeDocument = iframe.contentWindow.document;
-                
-                iframeDocument.open();
-                iframeDocument.write(generatedCode);
-                iframeDocument.close();
-            })
-            .catch(error => console.error('Error:', error));
-        }
+        const csrfToken = '{{ csrf_token }}';
 
-        // Function to download the generated code as a ZIP file
         function downloadZIP() {
-            fetch('/download_zip/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ 'html_code': generatedCode })
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'generated_webpage.zip';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            })
-            .catch(error => console.error('Error:', error));
-        }
+    if (!generatedCode) {
+        console.error("No HTML code generated yet.");
+        return;
+    }
 
-        // Function to toggle light/dark theme
+    fetch('/download_zip/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ 'html_code': generatedCode })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'generated_webpage.zip';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
         function toggleTheme() {
             const body = document.body;
-            if (body.classList.contains('white-mode')) {
-                body.classList.remove('white-mode');
+            const leftPanel = document.getElementById('left-panel');
+            const rightPanel = document.getElementById('right-panel');
+            const icon = document.getElementById('dark-mode-icon');
+
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                leftPanel.classList.remove('light-mode');
+                rightPanel.classList.remove('light-mode');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
                 localStorage.setItem('theme', 'dark');
             } else {
-                body.classList.add('white-mode');
+                body.classList.add('light-mode');
+                leftPanel.classList.add('light-mode');
+                rightPanel.classList.add('light-mode');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
                 localStorage.setItem('theme', 'light');
             }
         }
 
-        // Check for saved theme in localStorage and apply it
-        window.onload = function() {
+        function generateWeb() {
+    const spinner = document.getElementById('spinner');
+    const generateButton = document.querySelector('button.btn-primary');
+    
+    // Show spinner and update button text
+    spinner.style.display = 'block';
+    generateButton.innerText = 'Generating...';
+
+    fetch('/generate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ 'prompt': document.getElementById('prompt').value })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Store the generated HTML code in the global variable
+        generatedCode = data.html_code;
+
+        // Populate iframe with the generated HTML
+        const iframe = document.getElementById('outputIframe');
+        const iframeDocument = iframe.contentWindow.document;
+        
+        iframeDocument.open();
+        iframeDocument.write(generatedCode);
+        iframeDocument.close();
+    })
+    .catch(error => console.error('Error:', error))
+    .finally(() => {
+        // Hide spinner and reset button text
+        spinner.style.display = 'none';
+        generateButton.innerText = 'Generate';
+    });
+}
+
+window.onload = function () {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                document.body.classList.add('white-mode');
+                toggleTheme();
             }
         }
+
     </script>
-
-    <!-- Footer -->
-    <footer class="text-center text-lg-start">
-        <div class="container d-flex justify-content-center py-2">
-            <!-- <a class="btn btn-link btn-floating btn-lg text-light m-1" href="https://www.linkedin.com/in/shashank-v-h-a13538229/" -->
-            <!--     target="_blank" role="button" data-mdb-ripple-color="dark"><i class="fab fa-linkedin"></i></a> -->
-            <!-- <a class="btn btn-link btn-floating btn-lg text-light m-1" href="https://github.com/Shashank-V-H/django_lab_projects.git" -->
-            <!--     target="_blank" role="button" data-mdb-ripple-color="dark"><i class="fab fa-github"></i></a> -->
-        </div>
-        <div class="text-center text-white p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-            © 2024 Copyright: <b>S's</b>
-        </div>
-    </footer>
-    <!-- End Footer -->
-
-
-        <!-- highlight.js for highlighting the code -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" > </script>
-        <script>
-        hljs.highlightAll();
-        </script>
-        <!-- highlight.js for highlighting the code -->
-
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 
 </html>

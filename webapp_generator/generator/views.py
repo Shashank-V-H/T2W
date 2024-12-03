@@ -200,3 +200,5 @@ def parse_generated_code(code):
 
     return html_part, css_part, js_part
 
+def about_us(request):
+    return render(request,'about_us.html')
